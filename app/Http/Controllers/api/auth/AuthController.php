@@ -50,11 +50,12 @@ class AuthController extends Controller
         $user = User::create([
             'name' => "کاربر",
             'email' => $request->email,
-            'mobile' => $request->mobile,
             'password' => Hash::make($request->password)
         ]);
 
-        $user->update(["name" => "کاربر" + " " + $user->id]);
+        $user_name = "کاربر {$user->id}";
+
+        $user->update(["name" => $user_name]);
 
         if ($user) {
             return response([
@@ -135,6 +136,26 @@ class AuthController extends Controller
         return response([
             'message' => 'something went wrong',
             'status' => false
+        ], 200);
+    }
+
+    public function checkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+        $user = User::where("email", $request->email)->first();
+
+        if (!$user) {
+            return response([
+                'message' => 'user does not exists',
+                'status' => false
+            ], 200);
+        }
+
+        return response([
+            'message' => 'user exists',
+            'status' => true
         ], 200);
     }
 
