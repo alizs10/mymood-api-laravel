@@ -71,16 +71,11 @@ class AuthController extends Controller
 
     public function logout()
     {
-        $result = Auth::user()->tokens()->delete();
-        if ($result) {
-            return response([
-                'message' => 'successfully logged out'
-            ], 200);
-        }
+        Auth::user()->tokens()->delete();
 
         return response([
-            'message' => 'something went wrong, try again'
-        ], 500);
+            'message' => 'successfully logged out'
+        ], 200);
     }
 
     public function forgotPassword(Request $request)
@@ -171,7 +166,7 @@ class AuthController extends Controller
             ]);
             $user->update(["name" => "کاربر" + " " + $user->id]);
         }
-       
+
         $result = Auth::login($user);
         if ($result) {
             $token = Auth::user()->createToken('login')->plainTextToken;

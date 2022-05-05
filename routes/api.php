@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\app\MoodsController;
 use App\Http\Controllers\api\auth\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,9 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 //google login
 Route::get('/auth/google', [AuthController::class, "redirectToGoogle"]);
 Route::get('/auth/google/callback', [AuthController::class, "handleGoogleCallback"]);
+
+//public
+Route::get('/moods', [MoodsController::class, 'index']);
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
