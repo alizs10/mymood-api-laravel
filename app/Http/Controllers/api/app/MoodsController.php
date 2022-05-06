@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\api\app;
 
 use App\Http\Controllers\Controller;
+use App\Models\Likes;
 use App\Models\Mood;
+use App\Models\MoodUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,8 +51,11 @@ class MoodsController extends Controller
 
         $inputs = $request->only(["mood", "type"]);
         $inputs["user_id"] = Auth::user()->id;
-        
+
         $mood = Mood::create($inputs);
+        $likes = $mood->likes()->create([
+            'value' => 0,
+        ]);
 
         return response([
             "message" => "mood created successfully",
@@ -101,5 +106,37 @@ class MoodsController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function like(Mood $mood)
+    {
+        $user = Auth::user();
+        $isLikedBefore = MoodUser::where(["user_id" => $user->id, "mood_id" => $mood->id])->first();
+        if (!$isLikedBefore) {
+            $mood->usersLikes()->attach($user);
+            $likesValue = count($mood->usersLikes->toArray());
+            $mood->likes()->update(["value" => $likesValue]);
+        }
+
+        return response([
+            "message" => "mood liked successfully",
+            "mood" => $mood
+        ], 200);
+    }
+
+    public function unlike(Mood $mood)
+    {
+        $user = Auth::user();
+        $isLiked = MoodUser::where(["user_id" => $user->id, "mood_id" => $mood->id])->first();
+        if ($isLiked) {
+            $mood->usersLikes()->detach($user);
+            $likesValue = count($mood->usersLikes->toArray());
+            $mood->likes()->update(["value" => $likesValue]);
+        }
+
+        return response([
+            "message" => "mood unliked successfully",
+            "mood" => $mood
+        ], 200);
     }
 }

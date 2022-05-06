@@ -54,4 +54,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Mood::class, "user_id");
     }
+
+    public function moodsLiked()
+    {
+        return $this->belongsToMany(Mood::class)->using(MoodUser::class);
+    }
+
+    public function getUsersLikesValueAttribute()
+    {
+        return $this->moodsLiked;
+    }
 }
