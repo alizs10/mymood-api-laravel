@@ -8,7 +8,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Mood extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
-    protected $fillable = [];
+    protected $fillable = [
+        "mood",
+        "type",
+        "user_id",
+        "status"
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

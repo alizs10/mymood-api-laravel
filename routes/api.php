@@ -32,6 +32,10 @@ Route::get('/auth/google/callback', [AuthController::class, "handleGoogleCallbac
 Route::get('/moods', [MoodsController::class, 'index']);
 
 
+//private
+Route::post('/moods/store', [MoodsController::class, 'store'])->middleware('auth:sanctum');
+
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

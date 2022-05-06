@@ -49,4 +49,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function moods()
+    {
+        return $this->hasMany(Mood::class, "user_id");
+    }
 }

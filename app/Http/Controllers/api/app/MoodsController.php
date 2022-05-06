@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api\app;
 use App\Http\Controllers\Controller;
 use App\Models\Mood;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MoodsController extends Controller
 {
@@ -41,7 +42,20 @@ class MoodsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            "mood" => "required|string|min:3|max:700",
+            "type" => "required|in:0,1,2,3,4,5,6,7",
+        ]);
+
+        $inputs = $request->only(["mood", "type"]);
+        $inputs["user_id"] = Auth::user()->id;
+        
+        $mood = Mood::create($inputs);
+
+        return response([
+            "message" => "mood created successfully",
+            "mood" => $mood
+        ], 200);
     }
 
     /**
