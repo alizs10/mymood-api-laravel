@@ -52,7 +52,7 @@ class User extends Authenticatable
 
     public function moods()
     {
-        return $this->hasMany(Mood::class, "user_id");
+        return $this->hasMany(Mood::class, "user_id")->orderBy("created_at", "desc");
     }
 
     public function moodsLiked()
