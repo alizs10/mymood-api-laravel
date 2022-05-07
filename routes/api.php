@@ -42,6 +42,7 @@ Route::get('/profile', [UserController::class, 'profile'])->middleware('auth:san
 Route::post('/moods/store', [MoodsController::class, 'store'])->middleware('auth:sanctum');
 Route::get('/moods/{mood}/like', [MoodsController::class, 'like'])->middleware('auth:sanctum');
 Route::get('/moods/{mood}/unlike', [MoodsController::class, 'unlike'])->middleware('auth:sanctum');
+Route::get('/moods/{mood}/destroy', [MoodsController::class, 'destroy'])->middleware('auth:sanctum');
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

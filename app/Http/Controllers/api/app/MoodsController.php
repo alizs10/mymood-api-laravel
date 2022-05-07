@@ -103,9 +103,18 @@ class MoodsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Mood $mood)
     {
-        //
+        $user = Auth::user();
+        $res = $this->isUserOwnsMood($user, $mood);
+
+        if ($res) {
+            $mood->delete();
+
+            return response([
+                "mood deleted successfully"
+            ], 200);
+        }
     }
 
     public function like(Mood $mood)
@@ -138,5 +147,17 @@ class MoodsController extends Controller
             "message" => "mood unliked successfully",
             "mood" => $mood
         ], 200);
+    }
+
+
+    public function isUserOwnsMood($user, $mood)
+    {
+        if ($user->id === $mood->user_id) {
+            return true;
+        }
+
+        return response([
+            "message" => "did not found mood"
+        ], 419);
     }
 }
