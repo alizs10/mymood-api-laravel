@@ -37,6 +37,7 @@ Route::get('/moods', [MoodsController::class, 'index']);
 
 //profile
 Route::get('/profile', [UserController::class, 'profile'])->middleware('auth:sanctum');
+Route::put('/profile/update', [UserController::class, 'update'])->middleware('auth:sanctum');
 
 //moods
 Route::post('/moods/store', [MoodsController::class, 'store'])->middleware('auth:sanctum');

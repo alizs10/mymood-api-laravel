@@ -59,6 +59,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Mood::class)->using(MoodUser::class);
     }
+    public function followers()
+    {
+        return $this->hasMany(UserFollower::class, "follower_user_id");
+    }
+    public function followings()
+    {
+        return $this->hasMany(UserFollowing::class, "followed_user_id");
+    }
 
     public function getUsersLikesValueAttribute()
     {
