@@ -142,7 +142,7 @@ class AuthController extends Controller
         ]);
         $user = User::where("email", $request->email)->first();
         
-        if (!$user || empty($user->email_verified_at)) {
+        if (!$user || (empty($user->email_verified_at) && empty($user->password))) {
 
             if (!$user) {
                 $user = $this->registerEmail($request->email);
@@ -214,8 +214,8 @@ class AuthController extends Controller
     public function checkVerificationCode(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'verification_code' => 'required|string|size:8',
+            'email' => 'required|email|exists:users,email',
+            'verification_code' => 'required|string|size:6',
         ]);
 
         $user = User::where("email", $request->email)->first();
