@@ -18,7 +18,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 // first we check email -> if user not regitered, we send vcode -> check vcode -> set password
-// Authentications
+
+
+///////////////////// Authentications
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/check-email', [AuthController::class, 'checkEmail']);
 Route::post('/check-verification-code', [AuthController::class, 'checkVerificationCode']);
@@ -31,15 +33,22 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::get('/auth/google', [AuthController::class, "redirectToGoogle"]);
 Route::get('/auth/google/callback', [AuthController::class, "handleGoogleCallback"]);
 
-//public routes
+/////////////////////  public routes
 Route::get('/moods', [MoodsController::class, 'index']);
 
+//users
+Route::get('/users/{user}', [UserController::class, 'user']);
 
-//private routes
+/////////////////////  private routes
 
 //profile
 Route::get('/profile', [UserController::class, 'profile'])->middleware('auth:sanctum');
 Route::put('/profile/update', [UserController::class, 'update'])->middleware('auth:sanctum');
+
+//users
+Route::get('/users/{user_followed}/follow', [UserController::class, 'follow'])->middleware('auth:sanctum');
+Route::get('/users/{user_unfollowed}/unfollow', [UserController::class, 'unfollow'])->middleware('auth:sanctum');
+
 
 //moods
 Route::post('/moods/store', [MoodsController::class, 'store'])->middleware('auth:sanctum');
