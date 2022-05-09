@@ -17,10 +17,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// first we check email -> if user not regitered, we send vcode -> check vcode -> set password
 // Authentications
-Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/check-email', [AuthController::class, 'checkEmail']);
+Route::post('/check-verification-code', [AuthController::class, 'checkVerificationCode']);
+Route::post('/set-password', [AuthController::class, 'setPassword']);
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);

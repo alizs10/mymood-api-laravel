@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\EmailServices;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,33 +41,33 @@ class AuthController extends Controller
         ], 401);
     }
 
-    public function register(Request $request)
+    public function registerEmail($email)
     {
-        $request->validate([
-            'email' => 'required|email|unique:users,email',
-            'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers(), 'max:16', 'confirmed'],
-        ]);
-
         $user = User::create([
             'name' => "کاربر",
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'email' => $email,
         ]);
 
         $user_name = "کاربر {$user->id}";
-
         $user->update(["name" => $user_name]);
 
-        if ($user) {
-            return response([
-                'message' => 'user created successfully',
-                'user' => $user,
-            ], 200);
-        }
+        return $user;
+    }
+
+    public function setPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers(), 'max:16', 'confirmed'],
+        ]);
+
+        $user = User::where("email", $request->email)->first();
+        $user->update(["password" => Hash::make($request->password)]);
 
         return response([
-            'message' => 'something went wrong, try again'
-        ], 500);
+            "message" => "password is set successfully, ready to go",
+            "email" => $user->email
+        ], 200);
     }
 
     public function logout()
@@ -140,8 +141,25 @@ class AuthController extends Controller
             'email' => 'required|email'
         ]);
         $user = User::where("email", $request->email)->first();
+        
+        if (!$user || empty($user->email_verified_at)) {
 
-        if (!$user) {
+            if (!$user) {
+                $user = $this->registerEmail($request->email);
+            }
+
+            if ($user) {
+                $isVCodeSent = $this->sendVerificationCode($user);
+
+                if ($isVCodeSent) {
+                    return response([
+                        'message' => 'verification code sent successfully',
+                        'status' => false
+                    ], 200);
+                }
+            }
+
+
             return response([
                 'message' => 'user does not exists',
                 'status' => false
@@ -181,6 +199,44 @@ class AuthController extends Controller
             'message' => 'something went wrong, try again'
         ], 401);
     }
+
+
+    public function sendVerificationCode($user)
+    {
+        $verification_code = mt_rand(100000, 999999);
+        $user->update(['verification_code' => $verification_code]);
+
+        EmailServices::SendVCode($user->email, $verification_code);
+
+        return true;
+    }
+
+    public function checkVerificationCode(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'verification_code' => 'required|string|size:8',
+        ]);
+
+        $user = User::where("email", $request->email)->first();
+
+        $verification_code = $user->verification_code;
+
+        if ($verification_code === $request->verification_code) {
+            $user->update(['email_verified_at' => now(), 'verification_code' => null]);
+
+            return response([
+                'message' => 'user account activated successfully',
+                'email' => $user->email
+            ], 200);
+        }
+
+        return response([
+            'message' => 'verification code is wrong'
+        ], 422);
+    }
+
+
 
     public function redirectToGoogle()
     {
