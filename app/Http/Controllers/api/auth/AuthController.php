@@ -142,7 +142,7 @@ class AuthController extends Controller
         ]);
         $user = User::where("email", $request->email)->first();
         
-        if (!$user || (empty($user->email_verified_at) && empty($user->password))) {
+        if (!$user || (empty($user->email_verified_at) && empty($user->password)) || (!empty($user->email_verified_at) && empty($user->password))) {
 
             if (!$user) {
                 $user = $this->registerEmail($request->email);
