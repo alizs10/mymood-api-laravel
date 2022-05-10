@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Likes;
 use App\Models\Mood;
 use App\Models\MoodUser;
+use App\Services\MoodFilteringService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -52,6 +53,9 @@ class MoodsController extends Controller
         $inputs = $request->only(["mood", "type"]);
         $inputs["user_id"] = Auth::user()->id;
 
+        $moodFilteringService = new MoodFilteringService($inputs["mood"]);
+        $inputs["mood"] = $moodFilteringService->filter();
+        
         $mood = Mood::create($inputs);
         $likes = $mood->likes()->create([
             'value' => 0,

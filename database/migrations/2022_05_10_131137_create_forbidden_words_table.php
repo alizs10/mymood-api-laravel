@@ -13,11 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('reports', function (Blueprint $table) {
+        Schema::create('forbidden_words', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('mood_id')->constrained('moods')->onUpdate('cascade')->onDelete('cascade');
-            $table->tinyInteger('status')->default(0)->comment("0 => no action, 1 => useful");
+            $table->string("word");
+            $table->tinyInteger("status")->default(1);
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reports');
+        Schema::dropIfExists('forbidden_words');
     }
 };

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\app\MoodsController;
+use App\Http\Controllers\api\app\ReportController;
 use App\Http\Controllers\api\app\UserController;
 use App\Http\Controllers\api\auth\AuthController;
 use Illuminate\Http\Request;
@@ -38,6 +39,10 @@ Route::get('/moods', [MoodsController::class, 'index']);
 
 //users
 Route::get('/users/{user}', [UserController::class, 'user']);
+
+//report
+Route::get('/report/{mood}', [ReportController::class, 'report']);
+
 
 /////////////////////  private routes
 
