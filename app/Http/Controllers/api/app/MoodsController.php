@@ -7,6 +7,7 @@ use App\Models\Likes;
 use App\Models\Mood;
 use App\Models\MoodUser;
 use App\Services\MoodFilteringService;
+use App\Services\PaginationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,13 +18,30 @@ class MoodsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $moods = Mood::orderBy("created_at", "desc")->get();
+        $page = 1;
+        $lastID = "";
+        if (!empty($request->get("page"))) {
+            $page = $request->get("page");
+        }
+        if (!empty($request->get("last_id"))) {
+            $lastID = $request->get("last_id");
+        }
+
+        if (!empty($lastID)) {
+            $page = 1;
+            $moods = Mood::where("id", "<", $lastID)->orderBy("id", "desc")->get()->toArray();
+        } else {
+            $moods = Mood::orderBy("id", "desc")->get()->toArray();
+        }
+
+        $paginationService = new PaginationService();
+        $paginate = $paginationService->paginate($moods, $page, 5);
 
         return response([
             'message' => "moods loaded successfully",
-            'moods' => $moods
+            'paginate' => $paginate
         ], 200);
     }
 
