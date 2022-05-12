@@ -50,9 +50,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function moods()
+    public function moods($orderBy = ["column" => "created_at", "sort" => "desc"])
     {
-        return $this->hasMany(Mood::class, "user_id")->orderBy("created_at", "desc");
+        return $this->hasMany(Mood::class, "user_id")->orderBy($orderBy["column"], $orderBy["sort"]);
     }
 
     public function moodsLiked()

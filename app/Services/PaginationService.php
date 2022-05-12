@@ -25,7 +25,19 @@ class PaginationService
         }
 
         $totalPages = ceil($totalData / $perPage);
-        $page = $page > $totalPages ? $totalPages : $page;
+
+        if ($page > $totalPages) {
+            $this->paginate = [
+                "total_data" => $totalData,
+                "total_pages" => $totalPages,
+                "data" => [],
+                "last_id" => "",
+                "page" => $page,
+                "next_page" => ""
+            ];
+
+            return $this->paginate;
+        }
 
         //we find first index
         $firstDataIndex = ($perPage * $page) - $perPage;

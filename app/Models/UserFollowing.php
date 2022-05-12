@@ -16,6 +16,12 @@ class UserFollowing extends Model
         "followed_user_id"
     ];
 
+    public function moods($orderBy = ["column" => "created_at", "sort" => "desc"])
+    {
+        return $this->hasMany(Mood::class, "user_id", "followed_user_id")->orderBy($orderBy["column"], $orderBy["sort"]);
+    }
+
+
     public function user()
     {
         return $this->belongsTo(User::class);
