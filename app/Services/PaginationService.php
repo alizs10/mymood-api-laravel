@@ -39,15 +39,14 @@ class PaginationService
             return $this->paginate;
         }
 
+       
         //we find first index
         $firstDataIndex = ($perPage * $page) - $perPage;
         
-
         //get slice form array
         $slicedArray = array_slice($array, $firstDataIndex, $perPage);
         $lastDataIndex = count($slicedArray)-1;
-        
-
+       
         //last id in sliced array
         $lastID = $slicedArray[$lastDataIndex]["id"];
 

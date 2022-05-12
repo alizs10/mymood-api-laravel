@@ -22,9 +22,10 @@ class MoodsController extends Controller
     public function index(Request $request)
     {
         if ($request->bearerToken()) {
-            Auth::setUser(
-                Auth::guard('sanctum')->user()
-            );
+            $user = Auth::guard('sanctum')->user();
+            if ($user) {
+                Auth::setUser($user);
+            }
         }
         $user = Auth::user();
 
@@ -33,7 +34,7 @@ class MoodsController extends Controller
         $lastID = "";
         $orderBy = "lastest";
 
-        
+
         if (!empty($request->get("last_id"))) {
             $lastID = $request->get("last_id");
         }
@@ -60,22 +61,22 @@ class MoodsController extends Controller
             if (!empty($request->get("page"))) {
                 $page = $request->get("page");
             }
-            $lastID="";
+            $lastID = "";
             $moods = $moods->sortByDesc("likes_value");
         } else {
-            $moods = $moods->sortByDesc("created_at");
+            $moods = $moods->sortByDesc("id");
         }
 
         if (!empty($lastID)) {
-                $moods = $moods->where("id", "<", $lastID)->sortByDesc("id");
+            $moods = $moods->where("id", "<", $lastID)->sortByDesc("id");
         }
 
-        
+
 
         $moods = $moods->toArray();
 
         $paginationService = new PaginationService();
-        $paginate = $paginationService->paginate($moods, $page, 5);
+        $paginate = $paginationService->paginate($moods, $page, 20);
 
         return response([
             'message' => "moods loaded successfully",
