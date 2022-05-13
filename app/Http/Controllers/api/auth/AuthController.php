@@ -172,20 +172,22 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function loginOrRegister($user)
+    public function loginOrRegister($credentials)
     {
-        $user = User::where("email", $user->email)->first();
+        $user = User::where("email", $credentials->email)->first();
 
         if (!$user) {
             $user = User::create([
                 'name' => "کاربر",
-                'email' => $user->email,
-                'provider_id' => $user->provider_id
+                'email' => $credentials->email,
+                'provider_id' => $credentials->id,
+                'email_verified_at' => now()
             ]);
-            $user->update(["name" => "کاربر" + " " + $user->id]);
+            $user_name = "کاربر {$user->id}";
+            $user->update(["name" => $user_name]);
         }
 
-        $result = Auth::login($user);
+        $result = Auth::loginUsingId($user->id);
         if ($result) {
             $token = Auth::user()->createToken('login')->plainTextToken;
             return response([
@@ -195,6 +197,7 @@ class AuthController extends Controller
             ], 200);
         }
 
+        dd($result);
         return response([
             'message' => 'something went wrong, try again'
         ], 401);
@@ -240,13 +243,16 @@ class AuthController extends Controller
 
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        $res = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
+
+        return response(
+            $res
+        , 200);
     }
 
     public function handleGoogleCallback()
     {
-        $user = Socialite::driver('google')->user();
-
-        $this->loginOrRegister($user);
+        $user = Socialite::driver('google')->stateless()->user();
+        return $this->loginOrRegister($user);
     }
 }
