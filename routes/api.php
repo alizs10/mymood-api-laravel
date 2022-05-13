@@ -38,6 +38,7 @@ Route::get('/auth/google/callback', [AuthController::class, "handleGoogleCallbac
 Route::get('/moods', [MoodsController::class, 'index']);
 
 //users
+Route::get('/users/stats', [UserController::class, 'stats']);
 Route::get('/users/{user}', [UserController::class, 'user']);
 
 //report

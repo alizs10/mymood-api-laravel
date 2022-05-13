@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\app;
 
 use App\Http\Controllers\Controller;
+use App\Models\Mood;
 use App\Models\User;
 use App\Models\UserFollower;
 use App\Models\UserFollowing;
@@ -64,9 +65,10 @@ class UserController extends Controller
 
 
         if ($request->bearerToken()) {
-            Auth::setUser(
-                Auth::guard('sanctum')->user()
-            );
+            $loggedUser = Auth::guard('sanctum')->user();
+            if ($loggedUser) {
+                Auth::setUser($loggedUser);
+            }
         }
         $loggedUser = Auth::user();
         $isFollowed = false;
@@ -111,6 +113,46 @@ class UserController extends Controller
             "message" => "user unfollowed successfuuly",
             "followers" => count($user_unfollowed->followers)
 
+        ], 200);
+    }
+
+    public function stats()
+    {
+        $moods = Mood::all();
+        $types = [
+            "sad" => 0,
+            "happy" => 1,
+            "sick" => 2,
+            "sleepy" => 3,
+            "angry" => 4,
+            "anxious" => 5,
+            "expressionless" => 6,
+            "straight_face" => 7
+        ];
+        $sad = count($moods->where("type", $types["sad"])->toArray());
+        $happy = count($moods->where("type", $types["happy"])->toArray());
+        $sick = count($moods->where("type", $types["sick"])->toArray());
+        $sleepy = count($moods->where("type", $types["sleepy"])->toArray());
+        $angry = count($moods->where("type", $types["angry"])->toArray());
+        $anxious = count($moods->where("type", $types["anxious"])->toArray());
+        $expressionless = count($moods->where("type", $types["expressionless"])->toArray());
+        $straight_face = count($moods->where("type", $types["straight_face"])->toArray());
+
+        $data = [
+            $sad,
+            $happy,
+            $sick,
+            $sleepy,
+            $angry,
+            $anxious,
+            $expressionless,
+            $straight_face,
+        ];
+
+        return response([
+            "message" => "stats calculated successfully",
+            "data" => $data,
+            "types" => $types
         ], 200);
     }
 }
