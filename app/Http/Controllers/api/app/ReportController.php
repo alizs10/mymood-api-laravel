@@ -12,14 +12,18 @@ class ReportController extends Controller
 {
     public function report(Request $request, Mood $mood)
     {
-        if ($request->bearerToken()) {
-            Auth::setUser(
-                Auth::guard('sanctum')->user()
-            );
-        }
         $user_id = null;
-        if (Auth::user()) {
-            $user_id = Auth::user()->id;
+
+        if ($request->bearerToken()) {
+            $user = Auth::guard('sanctum')->user();
+            if ($user) {
+                Auth::setUser($user);
+            }
+        }
+        $user = Auth::user();
+        
+        if ($user) {
+            $user_id =$user->id;
         }
 
         $inputs = [

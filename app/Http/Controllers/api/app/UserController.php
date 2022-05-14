@@ -7,6 +7,7 @@ use App\Models\Mood;
 use App\Models\User;
 use App\Models\UserFollower;
 use App\Models\UserFollowing;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -60,7 +61,22 @@ class UserController extends Controller
 
     public function user(Request $request, User $user)
     {
-        $moods = $user->moods;
+        $orderBy = "lastest";
+        if (!empty($request->get("order_by"))) {
+            $orderBy = $request->get("order_by");
+        }
+
+        $moods = new Collection();
+        $moods = $moods->merge($user->moods);
+
+        if ($orderBy === "moodest") {
+            $moods = $user->moods->sortByDesc("likes_value");
+        }
+
+        $moods = $moods->toArray();
+
+
+       
         $followers = count($user->followers);
         $followings = count($user->followings);
 
@@ -86,7 +102,7 @@ class UserController extends Controller
         return response([
             "message" => "user information loaded successfuuly",
             "user" => $user,
-            "moods" => $moods,
+            "moods" => array_values($moods),
             "followers" => $followers,
             "followings" => $followings,
             "isFollowed" => $isFollowed,
