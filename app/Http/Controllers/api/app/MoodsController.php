@@ -83,7 +83,8 @@ class MoodsController extends Controller
             'paginate' => $paginate,
             'order_by' => $orderBy,
             'followers' => $followers,
-            'last_id' => $lastID
+            'last_id' => $lastID,
+            "server_time" => now()
         ], 200);
     }
 
@@ -123,7 +124,8 @@ class MoodsController extends Controller
 
         return response([
             "message" => "mood created successfully",
-            "mood" => $mood
+            "mood" => $mood,
+            "server_time" => now()
         ], 200);
     }
 

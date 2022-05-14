@@ -25,6 +25,7 @@ class UserController extends Controller
             "moods" => $moods,
             "followers" => $followers,
             "followings" => $followings,
+            "server_time" => now()
         ], 200);
     }
 
@@ -63,7 +64,6 @@ class UserController extends Controller
         $followers = count($user->followers);
         $followings = count($user->followings);
 
-
         if ($request->bearerToken()) {
             $loggedUser = Auth::guard('sanctum')->user();
             if ($loggedUser) {
@@ -90,7 +90,8 @@ class UserController extends Controller
             "followers" => $followers,
             "followings" => $followings,
             "isFollowed" => $isFollowed,
-            "loggedUser" => $loggedUser
+            "loggedUser" => $loggedUser,
+            "server_time" => now()
         ], 200);
     }
 
