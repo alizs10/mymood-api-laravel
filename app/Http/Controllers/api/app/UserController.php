@@ -13,17 +13,28 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function profile()
+    public function profile(Request $request)
     {
+        $orderBy = "lastest";
+        if (!empty($request->get("order_by"))) {
+            $orderBy = $request->get("order_by");
+        }
         $user = Auth::user();
         $moods = $user->moods;
+
+        if ($orderBy === "moodest") {
+            $moods = $user->moods->sortByDesc("likes_value");
+        }
+
+        $moods = $moods->toArray();
+
         $followers = count($user->followers);
         $followings = count($user->followings);
 
         return response([
             "message" => "user profile information loaded successfuuly",
             "user" => $user,
-            "moods" => $moods,
+            "moods" => array_values($moods),
             "followers" => $followers,
             "followings" => $followings,
             "server_time" => now()
