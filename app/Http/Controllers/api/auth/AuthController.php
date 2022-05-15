@@ -145,15 +145,17 @@ class AuthController extends Controller
 
         if (!Hash::check($request->old_password, $user->password)) {
            return response([
-               "message" => "old password is incorrect"
-           ], 419);
+               "message" => "old password is incorrect",
+               "status" => false
+           ], 200);
         }
 
         $result = $user->update(["password" => Hash::make($request->password)]);
 
         if ($result) {
             return response([
-                "message" => "password changed successfully"
+                "message" => "password changed successfully",
+                "status" => true
             ], 200);
         }
 
