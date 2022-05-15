@@ -27,8 +27,11 @@ Route::post('/check-email', [AuthController::class, 'checkEmail']);
 Route::post('/check-verification-code', [AuthController::class, 'checkVerificationCode']);
 Route::post('/set-password', [AuthController::class, 'setPassword']);
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
+Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
 
 //google login
 Route::get('/auth/google', [AuthController::class, "redirectToGoogle"]);

@@ -135,6 +135,30 @@ class AuthController extends Controller
         ], 200);
     }
 
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'old_password' => "required",
+            'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers(), 'max:16', 'confirmed']
+        ]);
+        $user = Auth::user();
+
+        if (!Hash::check($request->old_password, $user->password)) {
+           return response([
+               "message" => "old password is incorrect"
+           ], 419);
+        }
+
+        $result = $user->update(["password" => Hash::make($request->password)]);
+
+        if ($result) {
+            return response([
+                "message" => "password changed successfully"
+            ], 200);
+        }
+
+    }
+
     public function checkEmail(Request $request)
     {
         $request->validate([
